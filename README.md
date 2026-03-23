@@ -1,4 +1,6 @@
-cd al directorio del archibo y ejecutar npm run dev
+cd al directorio del archibo y ejecutar npm run dev 
+
+
 sino cojer al el archivo de /src/ps.jsx moverlo a otra carpeta y ejecutar npm create vite@latest 
 Select a framework:
 |  React
