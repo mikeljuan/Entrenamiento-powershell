@@ -258,6 +258,10 @@ Operadores lógicos:
       desc:'El while comprueba que la opción NO sea "4" (salir). -ne significa not equal (no igual). Mientras no elija 4, el menú se repite.',
       ej: '} while ($op -ne "4")\n# -ne = not equal\n# Si $op = "2" → "2" -ne "4" → verdadero → repite\n# Si $op = "4" → "4" -ne "4" → falso → sale'
     },
+    "Salir -ne 5":{
+      desc:'El while comprueba que la opción NO sea 5 (salir). -ne significa not equal (no igual). Mientras no elija 5, el menú se repite.',
+      ej: '} while ($men -ne 5)\n# -ne = not equal\n# Si $men = 2 → 2 -ne 5 → verdadero → repite\n# Si $men = 5 → 5 -ne 5 → falso → sale'
+    },
     "for llenar":{
       desc:"Un bucle for que pide un dato en cada vuelta y lo añade al array con +=.",
       ej: 'for ($i = 0; $i -lt 5; $i++) {\n    $arr += Read-Host "Palabra $($i+1)"\n}\n# Pide 5 palabras y las guarda en $arr'
@@ -433,11 +437,11 @@ const EXERCISES = [
     zones:[{name:"Array @()",check:c=>/@\(/.test(c)},{name:"For lectura",check:c=>/\bfor\b/i.test(c)},{name:"Read-Host en bucle",check:c=>/Read-Host/i.test(c)},{name:"Incremento +1",check:c=>/\+\s*1|\+\+/.test(c)},{name:"Dos bucles for",check:c=>(c.match(/\bfor\s*\(/gi)||[]).length>=2}],
     hints:["$array = @(0,0,0,0,0,0,0,0,0,0)","Primer for: Read-Host → $array[$i]","Segundo for: +1 y muestra"]},
   // ═══ REPASO EV3 (3) ═══
-  { id:"e1",set:"📗 Repaso Ev3",title:"1. Calculadora con funciones",
-    description:"Calculadora con suma, resta, multiplicación, división.\nUsa función \"operar\" (2 números + operación).\nMenú en otra función.\nRepite hasta pulsar salir.",
-    solution:`function menu {\n    Write-Host "=== CALCULADORA ==="\n    Write-Host "1. Suma"\n    Write-Host "2. Resta"\n    Write-Host "3. Multiplicacion"\n    Write-Host "4. Division"\n    Write-Host "5. Salir"\n    $op = Read-Host "Opcion"\n    return $op\n}\n\nfunction operar ($n1, $n2, $op) {\n    switch ($op) {\n        "1" { Write-Host "Resultado: $($n1 + $n2)" }\n        "2" { Write-Host "Resultado: $($n1 - $n2)" }\n        "3" { Write-Host "Resultado: $($n1 * $n2)" }\n        "4" { if ($n2 -ne 0) { Write-Host "Resultado: $($n1 / $n2)" } else { Write-Host "No dividir entre 0" } }\n    }\n}\n\n$salir = $false\nwhile (-not $salir) {\n    $op = menu\n    if ($op -eq "5") { $salir = $true }\n    else {\n        $n1 = [double](Read-Host "Num1")\n        $n2 = [double](Read-Host "Num2")\n        operar $n1 $n2 $op\n    }\n}`,
-    zones:[{name:"function menu",check:c=>/function\s+menu/i.test(c)},{name:"function operar",check:c=>/function\s+operar/i.test(c)},{name:"switch o if múltiple",check:c=>/\bswitch\b/i.test(c)||(c.match(/elseif/gi)||[]).length>=2},{name:"while principal",check:c=>/\bwhile\b/i.test(c)},{name:"4 operaciones",check:c=>/\+/.test(c)&&/\*/.test(c)&&/\//.test(c)}],
-    hints:["function menu → muestra opciones, return elegida","function operar con switch","while (-not $salir) envuelve todo"]},
+  { id:"e1",set:"📗 Repaso Ev3",title:"1. Calculadora",
+    description:"Calculadora con suma, resta, multiplicación, división.\nMuestra un menú con las opciones.\nPide dos números y opera según la elección.\nRepite con do/while hasta que elija salir.",
+    solution:`do {\n    [int]$men = Read-Host "Calculadora 1.Sumar 2.Restar 3.Multiplicar 4.Dividir 5.Salir"\n    if ($men -ne 5) {\n        [double]$num1 = Read-Host "Primer numero"\n        [double]$num2 = Read-Host "Segundo numero"\n        if ($men -eq 1) {\n            Write-Host "Resultado: $($num1 + $num2)"\n        } elseif ($men -eq 2) {\n            Write-Host "Resultado: $($num1 - $num2)"\n        } elseif ($men -eq 3) {\n            Write-Host "Resultado: $($num1 * $num2)"\n        } elseif ($men -eq 4) {\n            Write-Host "Resultado: $($num1 / $num2)"\n        } else {\n            Write-Host "Opcion no valida"\n        }\n    }\n} while ($men -ne 5)`,
+    zones:[{name:"do/while",check:c=>/\bdo\s*\{/i.test(c)},{name:"Read-Host",check:c=>/Read-Host/i.test(c)},{name:"-ne comparación",check:c=>/\-ne\s+5/i.test(c)},{name:"Dos Read-Host",check:c=>/Read-Host\s*"Primer/i.test(c)},{name:"3 Read-Host",check:c=>/Read-Host\s*"Segundo/i.test(c)},{name:"if/elseif/else",check:c=>/-eq\s+1/i.test(c)},{name:"+",check:c=>/\$num1\s*\+\s*\$num2/i.test(c)},{name:"if/elseif",check:c=>/-eq\s+2/i.test(c)},{name:"Salida",check:c=>/\$num1\s*-\s*\$num2/i.test(c)},{name:"*",check:c=>/-eq\s+3/i.test(c)},{name:"4 operaciones",check:c=>/\$num1\s*\*\s*\$num2/i.test(c)},{name:"Salida con variables",check:c=>/-eq\s+4/i.test(c)},{name:"Salida en bucle",check:c=>/\$num1\s*\/\s*\$num2/i.test(c)},{name:"Salir -ne 5",check:c=>/\}\s*while\s*\(/i.test(c)}],
+    hints:["do { ... } while ($men -ne 5) para repetir","[int]$men = Read-Host para el menú","if/elseif para cada operación: -eq 1, -eq 2..."]},
   { id:"e2",set:"📗 Repaso Ev3",title:"2. Adivinar número",
     description:"Genera aleatorio 1-10. Pide nº de intentos. Bucle hasta adivinar o sin intentos. Indica si el número es menor/mayor/acertado.",
     solution:`$numero = Get-Random -Minimum 1 -Maximum 11\n$max = [int](Read-Host "Numero de intentos")\n$cnt = 0\n$ok = $false\nwhile ($cnt -lt $max -and -not $ok) {\n    $int = [int](Read-Host "Tu numero")\n    $cnt++\n    if ($int -eq $numero) {\n        Write-Host "Acertaste en $cnt intentos"\n        $ok = $true\n    } elseif ($int -gt $numero) {\n        Write-Host "El aleatorio es menor"\n    } else {\n        Write-Host "El aleatorio es mayor"\n    }\n}\nif (-not $ok) { Write-Host "Sin intentos. Era $numero" }`,
@@ -566,8 +570,9 @@ export default function App(){
   const ta=useRef(null),pr=useRef(null);
   const ex=EXERCISES[idx];
   useEffect(()=>{setCode("");setRes(null);setSol(false);setYay(false);setExpanded(null);},[idx]);
-  const chk=()=>{const zr=ex.zones.map(z=>({...z,ok:z.check(code)}));const ok=zr.every(z=>z.ok)&&code.trim().length>12;setRes({zones:zr,ok});setSol(true);setExpanded(null);if(ok){setYay(true);setTimeout(()=>setYay(false),4500);}};
-  const nxt=()=>{const f=ex.zones.find(z=>!z.check(code));if(!f)return;const sl=ex.solution.split("\n");let ln="";for(const l of sl){if(f.check(l)){ln=l.trim();break;}}setCode(p=>(p.trim()?p.trim()+"\n":"")+(ln||`# TODO: ${f.name}`));const zr=ex.zones.map(z=>({...z,ok:z.check(code+(ln?"\n"+ln:""))}));setRes({zones:zr,ok:false});setSol(false);setExpanded(f.name);};
+  const braceBalance=(s)=>{const o=(s.match(/\{/g)||[]).length;const c=(s.match(/\}/g)||[]).length;return{open:o,close:c,balanced:o===c,missing:o-c};};
+  const chk=()=>{const zr=ex.zones.map(z=>({...z,ok:z.check(code)}));const bb=braceBalance(code);const ok=zr.every(z=>z.ok)&&code.trim().length>12&&bb.balanced;setRes({zones:zr,ok});setSol(true);setExpanded(null);if(ok){setYay(true);setTimeout(()=>setYay(false),4500);}};
+  const nxt=()=>{const f=ex.zones.find(z=>!z.check(code));if(!f){const bb=braceBalance(code);if(bb.missing>0){setCode(p=>p.trim()+"\n"+("}\n".repeat(bb.missing)).trim());setRes(r=>r?{...r,ok:false}:r);}return;}const sl=ex.solution.split("\n");let ln="";for(const l of sl){if(f.check(l)){ln=l.trim();break;}}setCode(p=>(p.trim()?p.trim()+"\n":"")+(ln||`# TODO: ${f.name}`));const zr=ex.zones.map(z=>({...z,ok:z.check(code+(ln?"\n"+ln:""))}));setRes({zones:zr,ok:false});setSol(false);setExpanded(f.name);};
   const handleTab=(e)=>{if(e.key==="Tab"){e.preventDefault();const t=e.target;const start=t.selectionStart;const end=t.selectionEnd;const val=code;setCode(val.substring(0,start)+"    "+val.substring(end));setTimeout(()=>{t.selectionStart=t.selectionEnd=start+4;},0);}};
   const sy=()=>{if(pr.current&&ta.current)pr.current.scrollTop=ta.current.scrollTop;};
   const sets=[...new Set(EXERCISES.map(e=>e.set))];
