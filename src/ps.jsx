@@ -680,7 +680,7 @@ export default function App(){
   useEffect(()=>{if(ta.current){ta.current.style.height="auto";ta.current.style.height=Math.max(220,ta.current.scrollHeight)+"px";}},[code]);
   const braceBalance=(s)=>{const o=(s.match(/\{/g)||[]).length;const c=(s.match(/\}/g)||[]).length;return{open:o,close:c,balanced:o===c,missing:o-c};};
   const chk=()=>{const zr=ex.zones.map(z=>({...z,ok:z.check(code)}));const bb=braceBalance(code);const braceZone={name:"Llaves { }",ok:bb.balanced,check:()=>bb.balanced};if(bb.open>0||bb.close>0)zr.push(braceZone);const ok=zr.every(z=>z.ok)&&code.trim().length>12;setRes({zones:zr,ok,bb});setSol(true);setExpanded(null);if(ok){setYay(true);setTimeout(()=>setYay(false),4500);}};
-  const nxt=()=>{const f=ex.zones.find(z=>!z.check(code));if(!f){const bb=braceBalance(code);if(bb.missing>0){setCode(p=>p.trim()+"\n"+("}\n".repeat(bb.missing)).trim());setRes(r=>r?{...r,ok:false}:r);}return;}const sl=ex.solution.split("\n");let ln="";for(const l of sl){if(f.check(l)){ln=l.trim();break;}}setCode(p=>(p.trim()?p.trim()+"\n":"")+(ln||`# TODO: ${f.name}`));const zr=ex.zones.map(z=>({...z,ok:z.check(code+(ln?"\n"+ln:""))}));setRes({zones:zr,ok:false});setSol(false);setExpanded(f.name);};
+  const nxt=()=>{const sl=ex.solution.split("\n");const cur=code.trim().split("\n").filter(l=>l.trim()).length;if(cur>=sl.length){const bb=braceBalance(code);if(bb.missing>0){setCode(p=>p.trim()+"\n"+("}\n".repeat(bb.missing)).trim());}return;}const next=sl[cur];const newCode=sl.slice(0,cur+1).join("\n");setCode(newCode);const zr=ex.zones.map(z=>({...z,ok:z.check(newCode)}));const f=zr.find(z=>!z.ok);setRes({zones:zr,ok:zr.every(z=>z.ok)});setSol(false);setExpanded(f?f.name:null);};
   const handleTab=(e)=>{if(e.key==="Tab"){e.preventDefault();const t=e.target;const start=t.selectionStart;const end=t.selectionEnd;const val=code;setCode(val.substring(0,start)+"    "+val.substring(end));setTimeout(()=>{t.selectionStart=t.selectionEnd=start+4;},0);}};
   const sy=()=>{if(pr.current&&ta.current)pr.current.scrollTop=ta.current.scrollTop;};
   const sets=[...new Set(EXERCISES.map(e=>e.set))];
@@ -735,12 +735,12 @@ export default function App(){
         {/* USER */}
         <div style={{marginBottom:12}}><div style={{color:"#ff2d6a",fontSize:11,fontWeight:700,marginBottom:5}}>📋 TU CÓDIGO</div>
         <div style={{background:"rgba(6,6,18,.8)",borderRadius:7,border:"1px solid rgba(255,45,106,.1)",padding:"5px 0",maxHeight:160,overflowY:"auto"}}>
-          {code.split("\n").map((l,i)=><div key={i} style={{padding:"1px 6px",fontFamily:"'Fira Code',monospace",fontSize:11,lineHeight:1.55}}><span dangerouslySetInnerHTML={{__html:hl(l)}}/></div>)}
+          {code.split("\n").map((l,i)=><div key={i} style={{padding:"1px 10px",fontFamily:"'Fira Code',monospace",fontSize:11,lineHeight:1.55,textAlign:"left",whiteSpace:"pre-wrap",wordBreak:"break-all"}}><span dangerouslySetInnerHTML={{__html:hl(l)}}/></div>)}
         </div></div>
         {/* SOL */}
         {sol&&<div><div style={{color:"#00ff88",fontSize:11,fontWeight:700,marginBottom:5}}>✨ SOLUCIÓN</div>
         <div style={{background:"rgba(6,6,18,.8)",borderRadius:7,border:"1px solid rgba(0,255,136,.1)",padding:"5px 0",maxHeight:280,overflowY:"auto"}}>
-          {ex.solution.split("\n").map((l,i)=>{const fx=res.zones.some(z=>!z.ok&&z.check(l));return<div key={i} style={{padding:"1px 6px",borderLeft:fx?"3px solid #00ff88":"3px solid transparent",background:fx?"rgba(0,255,136,.06)":"transparent",fontFamily:"'Fira Code',monospace",fontSize:11,lineHeight:1.55}}><span dangerouslySetInnerHTML={{__html:hl(l)}}/>{fx&&<span style={{color:"#00ff88",fontSize:9,marginLeft:6}}>← corregido</span>}</div>;})}
+          {ex.solution.split("\n").map((l,i)=>{const fx=res.zones.some(z=>!z.ok&&z.check(l));return<div key={i} style={{padding:"1px 10px",borderLeft:fx?"3px solid #00ff88":"3px solid transparent",background:fx?"rgba(0,255,136,.06)":"transparent",fontFamily:"'Fira Code',monospace",fontSize:11,lineHeight:1.55,textAlign:"left",whiteSpace:"pre-wrap",wordBreak:"break-all"}}><span dangerouslySetInnerHTML={{__html:hl(l)}}/>{fx&&<span style={{color:"#00ff88",fontSize:9,marginLeft:6}}>← corregido</span>}</div>;})}
         </div></div>}
       </>:<div style={{color:"#333",fontSize:12,textAlign:"center",marginTop:50,lineHeight:2.2}}><div style={{fontSize:32,marginBottom:8}}>⚡</div>Escribe tu script<br/>y pulsa <span style={{color:"#00f0ff",fontWeight:700}}>CHECK</span><br/><br/><span style={{color:"#ffb700"}}>SIGUIENTE PASO</span><br/>te ayuda</div>}
     </div>
